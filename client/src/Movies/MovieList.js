@@ -8,7 +8,7 @@ function MovieList({ movies, addToSavedList, setMovieList }) {
       {
         movies.map(movie => (
           <Link key={movie.id} to={`/movies/${movie.id}`}>
-            <MovieCard movie={movie} setMovieList={setMovieList} addToSavedList={addToSavedList} showSaveButton={false}/>
+            <MovieCard movies={movies} movie={movie} setMovieList={setMovieList} addToSavedList={addToSavedList} showSaveButton={false}/>
           </Link>
         ))
       }
