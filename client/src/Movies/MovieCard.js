@@ -1,23 +1,84 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 const MovieCard = props => {
-  const { title, director, metascore, stars } = props.movie;
+  const { push } = useHistory();
+  const [editMode, setEditMode] = useState(false);
+  const [movie, setMovie] = useState(props.movie);
+  const saveMovie = () => {
+    props.addToSavedList(props.movie);
+  };
+  const editMovie = event => {
+    event.preventDefault();
+    if (editMode) {
+      let newMovie = {
+        ...values,
+        stars: values.stars.split(",")
+      }
+      axios.put(`http://localhost:5000/api/movies/${props.movie.id}`, newMovie).then(response => {
+        console.log(response);
+        setEditMode(!editMode);
+        props.setMovieList(props.movies.map(element => (props.movie.id === element.id) ? newMovie : element));
+        setMovie(newMovie);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+    }
+    else {
+      setEditMode(!editMode);
+    }
+  }
+  const deleteMovie = event => {
+    event.preventDefault();
+    axios.delete(`http://localhost:5000/api/movies/${props.movie.id}`).then(response => {
+      console.log(response);
+      props.setMovieList(props.movies.filter(element => (props.movie.id !== element.id)));
+      push("/");
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+  const [values, updateValues] = useState({
+    ...props.movie,
+    stars: props.movie.stars.toString()
+  });
+  // {
+  //   id: 0,
+  //   title: "The Godfather",
+  //   director: "Francis Ford Coppola",
+  //   metascore: 100,
+  //   stars: ["Marlon Brando", "Al Pacino", "Robert Duvall"]
+  // }
+  const handleChanges = event => {
+    event.preventDefault();
+    updateValues({
+      ...values,
+      [event.target.name]: event.target.value
+    })
+  }
   return (
     <div className="movie-card">
-      <h2>{title}</h2>
-      <div className="movie-director">
-        Director: <em>{director}</em>
-      </div>
-      <div className="movie-metascore">
-        Metascore: <strong>{metascore}</strong>
-      </div>
-      <h3>Actors</h3>
-
-      {stars.map(star => (
-        <div key={star} className="movie-star">
-          {star}
-        </div>
-      ))}
+      <form>
+        {editMode ? <input type="text" name="title" id="title" onChange={handleChanges} value={values.title}/> :<h2>{movie.title}</h2>}
+        {editMode ? <input type="text" name="director" id="director" onChange={handleChanges} value={values.director}/> : <div className="movie-director">
+          Director: <em>{movie.director}</em>
+        </div>}
+        { editMode ? <input type="text" name="metascore" id="metascore" onChange={handleChanges} value={values.metascore}/> : <div className="movie-metascore">
+          Metascore: <strong>{movie.metascore}</strong>
+        </div>}
+        <h3>Actors</h3>
+        {editMode ? <input type="text" name="stars" id="stars" onChange={handleChanges} value={values.stars}/> : movie.stars.map(star => (
+          <div key={star} className="movie-star">
+            {star}
+          </div>
+        ))}
+      </form>
+      {(props.showSaveButton && !editMode) && <button onClick={saveMovie}>Save</button>}
+      {props.showSaveButton && <button onClick={editMovie}>{editMode ? "Update" : "Edit"}</button>}
+      {(props.showSaveButton && !editMode) && <button onClick={deleteMovie}>Delete</button>}
     </div>
   );
 };
