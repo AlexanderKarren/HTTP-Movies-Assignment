@@ -49,6 +49,39 @@ button:active {
   background-color:#EAEAEA;
 }
 
+.add-movie-button {
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+.add-movie {
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+.add-movie > form {
+  width:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background-color:#fff;
+  border-radius:10px;
+  padding:10px;
+  border: 1px solid #EAEAEA;
+  box-shadow: 0 -1px 0 #e0e0e0, 0 0 2px rgba(0, 0, 0, 0.12),
+  0 2px 4px rgba(0, 0, 0, 0.24);
+}
+
+.add-movie > form > input {
+  width:80%;
+}
+
+.add-movie > form >input:last-of-type {
+  font-size:1rem;
+}
+
 .movie-card {
   text-align:center;
   background-color: #fff;
